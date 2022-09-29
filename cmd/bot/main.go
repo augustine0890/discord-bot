@@ -9,8 +9,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"discordbot/config"
-	"discordbot/database"
+	"discordbot/internal/config"
+	"discordbot/internal/database"
 )
 
 var ctx = context.TODO()

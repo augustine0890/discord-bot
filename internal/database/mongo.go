@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"discordbot/config"
+	"discordbot/internal/config"
 	"log"
 	"time"
 
