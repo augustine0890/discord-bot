@@ -29,5 +29,5 @@ func Start(ctx context.Context) {
 	}
 
 	UsersCollection = client.Database("discord-bot").Collection("users")
-	ActivitiesCollection = client.Database("discord-bot").Collection("activites")
+	ActivitiesCollection = client.Database("discord-bot").Collection("activities")
 }
