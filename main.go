@@ -1,17 +1,29 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+
+	"discordbot/config"
+	"discordbot/database"
 )
 
+var ctx = context.TODO()
+
 func main() {
+	// Reading config file
+	err := config.ReadConfig()
+
+	// Connect to Database
+	database.Start(ctx)
+
 	// Create a new Discord session using the provided bot token
-	dg, err := discordgo.New("Bot " + conf.Discord.Token)
+	dg, err := discordgo.New("Bot " + config.Token)
 	if err != nil {
 		fmt.Println("error creating Discord session: ", err)
 	}
