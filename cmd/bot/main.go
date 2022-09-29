@@ -9,7 +9,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
+	"discordbot/internal/commands"
 	"discordbot/internal/config"
+
 	"discordbot/internal/database"
 )
 
@@ -17,19 +19,23 @@ var ctx = context.TODO()
 
 func main() {
 	// Reading config file
-	err := config.ReadConfig()
-
+	cgf, err := config.ReadConfig()
+	if err != nil {
+		fmt.Println("error reading config file", err)
+	}
 	// Connect to Database
 	database.Start(ctx)
 
 	// Create a new Discord session using the provided bot token
-	dg, err := discordgo.New("Bot " + config.Token)
+	dg, err := discordgo.New("Bot " + cgf.Token)
 	if err != nil {
 		fmt.Println("error creating Discord session: ", err)
 	}
 
-	// Register the messageCreate func as a callback for MessageCreate events.
-	dg.AddHandler(messageCreate)
+	// // Register the messageCreate func as a callback for MessageCreate events.
+	// dg.AddHandler(messageCreate)
+
+	registerCommands(dg, cgf)
 	// Only care about receiving message events
 	dg.Identify.Intents = discordgo.IntentsGuildMessages
 
@@ -70,4 +76,15 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content == "!pong" {
 		s.ChannelMessageSend(m.ChannelID, "ping!")
 	}
+}
+
+func registerCommands(s *discordgo.Session, cfg *config.Config) {
+	cmdHandler := commands.NewCommandHandler(cfg.Prefix)
+	cmdHandler.OnError = func(err error, ctx *commands.Context) {
+		ctx.Session.ChannelMessageSend(ctx.Message.ChannelID,
+			fmt.Sprintf("Command Execution failed: %s", err.Error()))
+	}
+
+	cmdHandler.RegisterCommand(&commands.CmdPing{})
+	s.AddHandler(cmdHandler.HandleMessage)
 }
