@@ -56,28 +56,6 @@ func main() {
 	dg.Close()
 }
 
-// This function will be called (due to AddHandler above) every time a new
-// message is created on any channel that the authenticated bot has access to.
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	// Ignore all message created by the bot itself
-	if m.Author.ID == s.State.User.ID {
-		return
-	}
-
-	// Only care about messages that are "ping"
-	// if m.Content != "!ping" {
-	// return
-	// }
-
-	if m.Content == "!ping" {
-		s.ChannelMessageSend(m.ChannelID, "pong!")
-	}
-
-	if m.Content == "!pong" {
-		s.ChannelMessageSend(m.ChannelID, "ping!")
-	}
-}
-
 func registerCommands(s *discordgo.Session, cfg *config.Config) {
 	cmdHandler := commands.NewCommandHandler(cfg.Prefix)
 	cmdHandler.OnError = func(err error, ctx *commands.Context) {
