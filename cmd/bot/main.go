@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,6 +14,7 @@ import (
 
 	"discordbot/internal/commands"
 	"discordbot/internal/config"
+	"discordbot/internal/utils"
 
 	"discordbot/internal/database"
 	"discordbot/internal/sentiment"
@@ -76,12 +76,18 @@ func registerCommands(s *discordgo.Session, cfg *config.Config) {
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	content := m.Content
+	err := utils.IsValidContent(content)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 
-	fmt.Println("Msg content: ", content)
+	fmt.Println("Sever's id", m.GuildID, 1019782712799805440) //
 	awsClient := sentiment.NewAwsClient()
 	result, err := awsClient.DetectSentiment(content)
 	if err != nil {
-		log.Println(err)
+		fmt.Println("Detect sentiment error: ", err)
+		return
 	}
 
 	// Get channel
