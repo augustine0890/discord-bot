@@ -2,17 +2,21 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"discordbot/internal/commands"
 	"discordbot/internal/config"
 
 	"discordbot/internal/database"
+	"discordbot/internal/sentiment"
 )
 
 var ctx = context.TODO()
@@ -37,6 +41,7 @@ func main() {
 
 	registerCommands(dg, cgf)
 
+	dg.AddHandler(messageHandler)
 	// Only care about receiving message events
 	// dg.Identify.Intents = discordgo.IntentsGuildMessages
 
@@ -66,4 +71,36 @@ func registerCommands(s *discordgo.Session, cfg *config.Config) {
 
 	cmdHandler.RegisterCommand(&commands.CmdPing{})
 	s.AddHandler(cmdHandler.HandleMessage)
+}
+
+func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
+	content := m.Content
+
+	awsClient := sentiment.NewAwsClient()
+	result, err := awsClient.DetectSentiment(content)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// Get channel
+	channel, _ := s.Channel(m.ChannelID)
+
+	// Sentiment Score
+	var ss map[string]float64
+	data, _ := json.Marshal(result.SentimentScore)
+	json.Unmarshal(data, &ss)
+
+	msg := database.Message{
+		ID:             primitive.NewObjectID(),
+		Username:       m.Author.Username,
+		Channel:        channel.Name,
+		Text:           content,
+		Sentiment:      *result.Sentiment,
+		SentimentScore: ss,
+	}
+
+	err = database.CreateMessage(msg, ctx)
+	if err == nil {
+		return
+	}
 }

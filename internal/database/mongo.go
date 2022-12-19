@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	UsersCollection      *mongo.Collection
-	ActivitiesCollection *mongo.Collection
+	MessagesCollection *mongo.Collection
+	// ActivitiesCollection *mongo.Collection
 )
 
 func Start(ctx context.Context) {
@@ -28,6 +28,18 @@ func Start(ctx context.Context) {
 		log.Fatal(err)
 	}
 
-	UsersCollection = client.Database("discord-bot").Collection("users")
-	ActivitiesCollection = client.Database("discord-bot").Collection("activities")
+	// UsersCollection = client.Database("discord-bot").Collection("users")
+	// ActivitiesCollection = client.Database("discord-bot").Collection("activities")
+	MessagesCollection = client.Database("discord-bot").Collection("messages")
+}
+
+func CreateMessage(msg Message, ctx context.Context) (err error) {
+	result, insertErr := MessagesCollection.InsertOne(ctx, msg)
+	if insertErr != nil {
+		log.Println(insertErr)
+		return insertErr
+	}
+
+	log.Println("New Message ID:", result.InsertedID)
+	return nil
 }
