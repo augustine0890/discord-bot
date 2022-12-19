@@ -75,10 +75,16 @@ func registerCommands(s *discordgo.Session, cfg *config.Config) {
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// Check valid message content
 	content := m.Content
 	err := utils.IsValidContent(content)
 	if err != nil {
 		fmt.Println(err.Error())
+		return
+	}
+
+	// Check users
+	if utils.IgnoreUser(m.Author.ID) {
 		return
 	}
 
