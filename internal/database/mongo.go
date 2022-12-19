@@ -30,7 +30,7 @@ func Start(ctx context.Context) {
 
 	// UsersCollection = client.Database("discord-bot").Collection("users")
 	// ActivitiesCollection = client.Database("discord-bot").Collection("activities")
-	MessagesCollection = client.Database("discord-bot").Collection("messages")
+	MessagesCollection = client.Database("discord-stats").Collection("messages")
 }
 
 func CreateMessage(msg Message, ctx context.Context) (err error) {

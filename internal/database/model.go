@@ -13,5 +13,5 @@ type Message struct {
 	SentimentScore map[string]float64 `bson:"sentiment_score"`
 	Topic          string             `bson:"topic"`
 	CreatedAt      primitive.DateTime `bson:"createdAt"`
-	UpdatedAt      primitive.DateTime `bson:"updatedAt"`
+	// UpdatedAt      primitive.DateTime `bson:"updatedAt"`
 }

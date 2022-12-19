@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -76,6 +77,7 @@ func registerCommands(s *discordgo.Session, cfg *config.Config) {
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	content := m.Content
 
+	fmt.Println("Msg content: ", content)
 	awsClient := sentiment.NewAwsClient()
 	result, err := awsClient.DetectSentiment(content)
 	if err != nil {
@@ -97,6 +99,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Text:           content,
 		Sentiment:      *result.Sentiment,
 		SentimentScore: ss,
+		CreatedAt:      primitive.NewDateTimeFromTime(time.Now()),
 	}
 
 	err = database.CreateMessage(msg, ctx)
