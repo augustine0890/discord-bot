@@ -6,4 +6,5 @@ services:
       dockerfile: Dockerfile
     env_file:
       - prod.env
+    network_mode: bridge
     entrypoint: [ "./bot" ]
