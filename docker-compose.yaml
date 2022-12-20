@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  stats:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - prod.env
+    entrypoint: [ "./bot" ]
