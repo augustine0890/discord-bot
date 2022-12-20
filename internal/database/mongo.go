@@ -2,8 +2,8 @@ package database
 
 import (
 	"context"
-	"discordbot/internal/config"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -18,7 +18,7 @@ var (
 func Start(ctx context.Context) {
 	serverAPIOptions := options.ServerAPI(options.ServerAPIVersion1)
 	clientOptions := options.Client().
-		ApplyURI(config.Database).
+		ApplyURI(os.Getenv("MONGODB_URI")).
 		SetServerAPIOptions(serverAPIOptions)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

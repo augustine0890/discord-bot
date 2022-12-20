@@ -1,6 +1,10 @@
 package utils
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/joho/godotenv"
+)
 
 var (
 	ignoreUser = []string{
@@ -51,4 +55,16 @@ func IgnoreChannel(channelID string) bool {
 		}
 	}
 	return false
+}
+
+func LoadEnv(env string) error {
+	switch env {
+	case "prod":
+		err := godotenv.Load("prod.env")
+		return err
+	case "dev":
+		err := godotenv.Load("dev.env")
+		return err
+	}
+	return nil
 }

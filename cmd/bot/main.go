@@ -23,16 +23,23 @@ import (
 var ctx = context.TODO()
 
 func main() {
-	// Reading config file
-	cgf, err := config.ReadConfig()
+	// Loading enviroment variables
+	err := utils.LoadEnv("dev")
 	if err != nil {
-		fmt.Println("error reading config file", err)
+		fmt.Printf("Error loading environment: %v\n", err)
 	}
+
+	// Reading config file
+	// cgf, err := config.ReadConfig()
+	// if err != nil {
+	// fmt.Println("error reading config file", err)
+	// }
+
 	// Connect to Database
 	database.Start(ctx)
 
 	// Create a new Discord session using the provided bot token
-	dg, err := discordgo.New("Bot " + cgf.Token)
+	dg, err := discordgo.New("Bot " + os.Getenv("TOKEN"))
 	if err != nil {
 		fmt.Println("error creating Discord session: ", err)
 	}
@@ -40,7 +47,7 @@ func main() {
 	// // Register the messageCreate func as a callback for MessageCreate events.
 	// dg.AddHandler(messageCreate)
 
-	registerCommands(dg, cgf)
+	// registerCommands(dg, cgf)
 
 	dg.AddHandler(messageHandler)
 	// Only care about receiving message events

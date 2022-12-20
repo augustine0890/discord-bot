@@ -1,2 +1,5 @@
 // config file
 config.json
+
+// Environment variables
+*.env
