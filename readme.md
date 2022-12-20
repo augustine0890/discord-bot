@@ -16,6 +16,6 @@
 ## Build Docker image
 - `docker build -t stats-bot .`
 - Create and start containers
-  - `docker compose up`
+  - `docker compose up --build`
 - Stop service: `docker compose stop`
 - Stop and remove containers, networks: `docker-compose down --remove-orphans`
