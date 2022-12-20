@@ -12,7 +12,7 @@ var (
 		"948825318515425280",  // sky
 	}
 	ignoreChannel = []string{
-		"1021958640829210674", // test server
+		"1021958640829210674", // test server (attendance)
 		"808621206718251058",  // moderator-only
 		"537522976963166218",  // announcements.
 		"583944383083184129",  // playdapp-sns.
@@ -38,6 +38,15 @@ func IsValidContent(content string) error {
 func IgnoreUser(userID string) bool {
 	for _, u := range ignoreUser {
 		if u == userID {
+			return true
+		}
+	}
+	return false
+}
+
+func IgnoreChannel(channelID string) bool {
+	for _, c := range ignoreChannel {
+		if c == channelID {
 			return true
 		}
 	}

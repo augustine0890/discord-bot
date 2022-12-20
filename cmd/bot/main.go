@@ -75,6 +75,17 @@ func registerCommands(s *discordgo.Session, cfg *config.Config) {
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// Check users
+	if utils.IgnoreUser(m.Author.ID) {
+		return
+	}
+
+	// Get channel
+	channel, _ := s.Channel(m.ChannelID)
+	if utils.IgnoreChannel(channel.ID) {
+		return
+	}
+
 	// Check valid message content
 	content := m.Content
 	err := utils.IsValidContent(content)
@@ -83,21 +94,14 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	// Check users
-	if utils.IgnoreUser(m.Author.ID) {
-		return
-	}
+	// fmt.Println("Sever's id", m.GuildID, 1019782712799805440) //
 
-	fmt.Println("Sever's id", m.GuildID, 1019782712799805440) //
 	awsClient := sentiment.NewAwsClient()
 	result, err := awsClient.DetectSentiment(content)
 	if err != nil {
 		fmt.Println("Detect sentiment error: ", err)
 		return
 	}
-
-	// Get channel
-	channel, _ := s.Channel(m.ChannelID)
 
 	// Sentiment Score
 	var ss map[string]float64

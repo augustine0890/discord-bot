@@ -34,12 +34,12 @@ func Start(ctx context.Context) {
 }
 
 func CreateMessage(msg Message, ctx context.Context) (err error) {
-	result, insertErr := MessagesCollection.InsertOne(ctx, msg)
+	_, insertErr := MessagesCollection.InsertOne(ctx, msg)
 	if insertErr != nil {
 		log.Println(insertErr)
 		return insertErr
 	}
 
-	log.Println("New Message ID:", result.InsertedID)
+	// log.Println("New Message ID:", result.InsertedID)
 	return nil
 }
