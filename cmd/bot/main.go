@@ -24,7 +24,7 @@ var ctx = context.TODO()
 
 func main() {
 	// Loading enviroment variables
-	err := utils.LoadEnv("dev")
+	err := utils.LoadEnv("prod")
 	if err != nil {
 		fmt.Printf("Error loading environment: %v\n", err)
 	}
