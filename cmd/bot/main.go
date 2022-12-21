@@ -115,6 +115,9 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	data, _ := json.Marshal(result.SentimentScore)
 	json.Unmarshal(data, &ss)
 
+	// Get KST
+	kst := time.Now().Add(time.Hour * 9)
+
 	msg := database.Message{
 		ID:             primitive.NewObjectID(),
 		Username:       m.Author.Username,
@@ -122,7 +125,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Text:           content,
 		Sentiment:      *result.Sentiment,
 		SentimentScore: ss,
-		CreatedAt:      primitive.NewDateTimeFromTime(time.Now()),
+		CreatedAt:      primitive.NewDateTimeFromTime(kst),
 	}
 
 	err = database.CreateMessage(msg, ctx)
