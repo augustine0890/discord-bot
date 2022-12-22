@@ -1,5 +1,13 @@
 # Discord Bot Application
 
+## How to run the Bot
+- `go run cmd/bot/main.go`
+- Using the `-stage` flag
+  - `go run cmd/bot/main.go -stage="dev"`
+  - `go run cmd/bot/main.go -stage dev`
+- Run with `go build`
+  - `go build -o bot ./cmd/bot/main.go`
+  - Build: `./bot -stage dev` --> development stage
 ## Install Docker and Go
 - Update the installed packages
   - `sudo apt-get update`

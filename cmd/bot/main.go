@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -23,11 +25,16 @@ import (
 var ctx = context.TODO()
 
 func main() {
+	// Flag will be stored in the stage variable at runtime
+	stage := flag.String("stage", "prod", "The enviroment running")
+	flag.Parse()
+
 	// Loading enviroment variables
-	err := utils.LoadEnv("prod")
+	err := utils.LoadEnv(*stage)
 	if err != nil {
 		fmt.Printf("Error loading environment: %v\n", err)
 	}
+	log.Printf("Running with %v enviroment\n", *stage)
 
 	// Reading config file
 	// cgf, err := config.ReadConfig()
@@ -119,13 +126,12 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	kst := time.Now().Add(time.Hour * 9)
 
 	msg := database.Message{
-		ID:             primitive.NewObjectID(),
-		Username:       m.Author.Username,
-		Channel:        channel.Name,
-		Text:           content,
-		Sentiment:      *result.Sentiment,
-		SentimentScore: ss,
-		CreatedAt:      primitive.NewDateTimeFromTime(kst),
+		ID:        primitive.NewObjectID(),
+		Username:  m.Author.Username,
+		Channel:   channel.Name,
+		Text:      content,
+		Sentiment: *result.Sentiment,
+		CreatedAt: primitive.NewDateTimeFromTime(kst),
 	}
 
 	err = database.CreateMessage(msg, ctx)
