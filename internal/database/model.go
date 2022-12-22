@@ -10,8 +10,7 @@ type Message struct {
 	Channel        string             `bson:"channel"`
 	Text           string             `bson:"text"`
 	Sentiment      string             `bson:"sentiment"`
-	SentimentScore map[string]float64 `bson:"sentiment_score"`
-	Topic          string             `bson:"topic"`
+	SentimentScore map[string]float64 `bson:"sentiment_score,omitempty"`
+	Topic          string             `bson:"topic,omitempty"`
 	CreatedAt      primitive.DateTime `bson:"createdAt"`
-	// UpdatedAt      primitive.DateTime `bson:"updatedAt"`
 }
