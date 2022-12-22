@@ -33,8 +33,8 @@ var (
 
 func IsValidContent(content string) error {
 	// Check the content size less than 5
-	if len(content) < 5 {
-		return fmt.Errorf("The message content must be at least 5 characters long")
+	if len(content) < 3 {
+		return fmt.Errorf("The message content must be at least 5 (or 3) characters long")
 	}
 	return nil
 }

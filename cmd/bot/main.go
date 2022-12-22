@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -118,9 +117,9 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// Sentiment Score
-	var ss map[string]float64
-	data, _ := json.Marshal(result.SentimentScore)
-	json.Unmarshal(data, &ss)
+	// var ss map[string]float64
+	// data, _ := json.Marshal(result.SentimentScore)
+	// json.Unmarshal(data, &ss)
 
 	// Get KST
 	kst := time.Now().Add(time.Hour * 9)
