@@ -134,7 +134,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	err = database.CreateMessage(msg, ctx)
-	if err == nil {
+	if err != nil {
 		return
 	}
 }
