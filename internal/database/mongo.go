@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -41,5 +43,20 @@ func CreateMessage(msg Message, ctx context.Context) (err error) {
 	}
 
 	// log.Println("New Message ID:", result.InsertedID)
+	return nil
+}
+
+func DeleteMessageWeekly(ctx context.Context) error {
+	// Only save latest one month data
+	oneMonthBefore := time.Now().AddDate(0, -1, 0)
+	time := primitive.NewDateTimeFromTime(oneMonthBefore)
+
+	filter := bson.D{{"createdAt", bson.D{{"$lte", time}}}}
+
+	_, deleteErr := MessagesCollection.DeleteMany(ctx, filter)
+	if deleteErr != nil {
+		log.Println(deleteErr)
+		return deleteErr
+	}
 	return nil
 }
