@@ -6,6 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.44.164
 	github.com/bwmarrin/discordgo v0.26.1
 	github.com/joho/godotenv v1.4.0
+	github.com/robfig/cron/v3 v3.0.0
 	go.mongodb.org/mongo-driver v1.11.1
 )
 
