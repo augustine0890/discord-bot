@@ -26,10 +26,12 @@
   - `docker build -t stats-bot:tags .`
 - Run the new container from image
   - `docker run stats-bot:tags -stage dev`
-- Remove Docker image
+- Remove Docker image:
   - `docker image rm -f image_id`
-- Create and start containers
+- Create and start containers:
   - `docker compose up --build`
   - `docker-compose --env-file prod.env up --build`
 - Stop service: `docker compose stop`
 - Stop and remove containers, networks: `docker-compose down --remove-orphans`
+- Remove stopped containers, dangling images:
+  - `docker system prune`
