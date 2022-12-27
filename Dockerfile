@@ -10,6 +10,6 @@ RUN go build -o bot ./cmd/bot/main.go
 FROM alpine:3 AS final
 
 WORKDIR /app
-COPY *.env /app
 COPY --from=build /build/bot ./bot
+COPY *.env /app
 ENTRYPOINT ["./bot"]
