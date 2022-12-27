@@ -24,8 +24,8 @@
 ## Build Docker image
 - Build the image from Dockerfile
   - `docker build -t stats-bot:tags .`
-- Run the new container from image
-  - `docker run stats-bot:tags -stage dev`
+- Run the new container from image (Run container in background)
+  - `docker run -d stats-bot:tags -stage dev`
 - Remove Docker image:
   - `docker image rm -f image_id`
 - Create and start containers:
@@ -35,3 +35,6 @@
 - Stop and remove containers, networks: `docker-compose down --remove-orphans`
 - Remove stopped containers, dangling images:
   - `docker system prune`
+
+## TODO
+- Implement logging file
