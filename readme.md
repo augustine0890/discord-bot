@@ -22,7 +22,12 @@
   - `sudo service docker start`
 
 ## Build Docker image
-- `docker build -t stats-bot .`
+- Build the image from Dockerfile
+  - `docker build -t stats-bot:tags .`
+- Run the new container from image
+  - `docker run stats-bot:tags -stage dev`
+- Remove Docker image
+  - `docker image rm -f image_id`
 - Create and start containers
   - `docker compose up --build`
   - `docker-compose --env-file prod.env up --build`

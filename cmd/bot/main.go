@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/robfig/cron/v3"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"discordbot/internal/commands"
@@ -43,6 +44,17 @@ func main() {
 
 	// Connect to Database
 	database.Start(ctx)
+
+	// Delete messages weekly
+	c := cron.New()
+	// Running At 09:00, only on Monday (0 9 * * MON)
+	c.AddFunc("0 9 * * MON", func() {
+		err = database.DeleteMessageWeekly(ctx)
+		if err != nil {
+			log.Printf("Error deleting messages%v\n", err)
+		}
+	})
+	c.Start()
 
 	// Create a new Discord session using the provided bot token
 	dg, err := discordgo.New("Bot " + os.Getenv("TOKEN"))
