@@ -14,6 +14,7 @@ var (
 		"912897330213179402",  // rosie
 		"885891259053531176",  // semi
 		"948825318515425280",  // sky
+		"1060788078266036305", // TweetShiftBOT
 	}
 	ignoreChannel = []string{
 		"1021958640829210674", // test server (attendance)
