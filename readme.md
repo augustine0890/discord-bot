@@ -26,6 +26,7 @@
   - `docker build -t stats-bot:tags .`
 - Run the new container from image (Run container in background)
   - `docker run -d stats-bot:tags -stage dev`
+  - `docker run -d stats-bot:tags` (production stage)
 - Remove Docker image:
   - `docker image rm -f image_id`
 - Create and start containers:
