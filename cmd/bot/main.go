@@ -115,7 +115,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	content := m.Content
 	err := utils.IsValidContent(content)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
