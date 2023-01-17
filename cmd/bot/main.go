@@ -71,7 +71,7 @@ func main() {
 	// Only care about receiving message events
 	// dg.Identify.Intents = discordgo.IntentsGuildMessages
 
-	dg.AddHandler(collectHistoryMessage)
+	dg.AddHandler(collectHistoryMessages)
 
 	// Open a websocket connection to Discord and begin listenning
 	err = dg.Open()
@@ -101,14 +101,18 @@ func registerCommands(s *discordgo.Session, cfg *config.Config) {
 	s.AddHandler(cmdHandler.HandleMessage)
 }
 
-func collectHistoryMessage(s *discordgo.Session, r *discordgo.Ready) {
+func collectHistoryMessages(s *discordgo.Session, r *discordgo.Ready) {
 	// Get channels for this guild
 	// channels, _ := s.GuildChannels("537515978561683466")
 	// for _, ch := range channels {
 	// fmt.Println(ch.ID, ch.Name)
 	// }
 
-	log.Printf("Collecting history")
+	log.Printf("We have logged in as %s", r.User.Username)
+	log.Println("Collecting History Messages...")
+
+	awsClient := sentiment.NewAwsClient()
+
 	mess, _ := s.ChannelMessages("", 100, "", "", "")
 	for _, m := range mess {
 		// Check users
@@ -118,20 +122,20 @@ func collectHistoryMessage(s *discordgo.Session, r *discordgo.Ready) {
 
 		// Check valid message content
 		content := m.Content
+
 		err := utils.IsValidContent(content)
 		if err != nil {
 			log.Println(err.Error())
 			continue
 		}
 
-		channel, _ := s.Channel(m.ChannelID)
-
-		awsClient := sentiment.NewAwsClient()
 		result, err := awsClient.DetectSentiment(content)
 		if err != nil {
 			fmt.Println("Detect sentiment error: ", err)
 			continue
 		}
+
+		channel, _ := s.Channel(m.ChannelID)
 
 		// Get KST
 		kst := m.Timestamp.Add(time.Hour * 9)
@@ -150,7 +154,7 @@ func collectHistoryMessage(s *discordgo.Session, r *discordgo.Ready) {
 			continue
 		}
 
-		fmt.Println("Content", m.Author.Username, channel.Name, m.Content, *result.Sentiment, m.Timestamp, kst)
+		fmt.Println("Documents", m.Author.Username, channel.Name, m.Content, *result.Sentiment, m.Timestamp, kst)
 	}
 
 }
