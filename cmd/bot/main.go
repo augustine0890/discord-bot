@@ -111,9 +111,14 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	content, err := m.ContentWithMoreMentionsReplaced(s)
+	if err != nil {
+		log.Printf("Error getting mentions replaced content %s", err.Error())
+		content = m.Content
+	}
+
 	// Check valid message content
-	content := m.Content
-	err := utils.IsValidContent(content)
+	err = utils.IsValidContent(content)
 	if err != nil {
 		log.Println(err.Error())
 		return
