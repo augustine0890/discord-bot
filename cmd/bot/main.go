@@ -133,21 +133,44 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	contentReq := &sentiment.TextRequest{Text: content}
+	huggingFaceRes, err := sentiment.HuggingFaceSentiment(*contentReq)
+	// log.Println("LABEL", huggingFaceRes.Label)
+
+	// Get KST
+	kst := time.Now().Add(time.Hour * 9)
+
+	if err != nil {
+		msg := database.Message{
+			ID:        primitive.NewObjectID(),
+			Username:  m.Author.Username,
+			Channel:   channel.Name,
+			Text:      content,
+			Sentiment: *result.Sentiment,
+			CreatedAt: primitive.NewDateTimeFromTime(kst),
+		}
+
+		err = database.CreateMessage(msg, ctx)
+		if err != nil {
+			return
+		}
+
+		return
+	}
+
 	// Sentiment Score
 	// var ss map[string]float64
 	// data, _ := json.Marshal(result.SentimentScore)
 	// json.Unmarshal(data, &ss)
 
-	// Get KST
-	kst := time.Now().Add(time.Hour * 9)
-
 	msg := database.Message{
-		ID:        primitive.NewObjectID(),
-		Username:  m.Author.Username,
-		Channel:   channel.Name,
-		Text:      content,
-		Sentiment: *result.Sentiment,
-		CreatedAt: primitive.NewDateTimeFromTime(kst),
+		ID:                   primitive.NewObjectID(),
+		Username:             m.Author.Username,
+		Channel:              channel.Name,
+		Text:                 content,
+		Sentiment:            *result.Sentiment,
+		SentimentHuggingFace: huggingFaceRes.Label,
+		CreatedAt:            primitive.NewDateTimeFromTime(kst),
 	}
 
 	err = database.CreateMessage(msg, ctx)
