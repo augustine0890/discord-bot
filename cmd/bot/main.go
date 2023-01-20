@@ -132,13 +132,16 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fmt.Println("Detect sentiment error: ", err)
 		return
 	}
-
-	contentReq := &sentiment.TextRequest{Text: content}
-	huggingFaceRes, err := sentiment.HuggingFaceSentiment(*contentReq)
-	// log.Println("LABEL", huggingFaceRes.Label)
-
 	// Get KST
 	kst := time.Now().Add(time.Hour * 9)
+
+	contentReq := &sentiment.TextRequest{Text: content}
+
+	// Sentiment analysis with huggingface
+	huggingFaceRes, err := sentiment.HuggingFaceSentiment(*contentReq, "sentiment")
+	// log.Println("LABEL", huggingFaceRes.Label)
+	// Emotion classification
+	emotion, err := sentiment.HuggingFaceSentiment(*contentReq, "emotion")
 
 	if err != nil {
 		msg := database.Message{
@@ -170,6 +173,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Text:                 content,
 		Sentiment:            *result.Sentiment,
 		SentimentHuggingFace: huggingFaceRes.Label,
+		Emotion:              emotion.Label,
 		CreatedAt:            primitive.NewDateTimeFromTime(kst),
 	}
 

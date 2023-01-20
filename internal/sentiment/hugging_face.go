@@ -18,7 +18,7 @@ type Results struct {
 	Score float64 `json:"score"`
 }
 
-func HuggingFaceSentiment(request TextRequest) (*Results, error) {
+func HuggingFaceSentiment(request TextRequest, task string) (*Results, error) {
 	c := http.Client{Timeout: time.Duration(5) * time.Minute}
 	var results *Results
 
@@ -27,7 +27,9 @@ func HuggingFaceSentiment(request TextRequest) (*Results, error) {
 		log.Printf("Text Request Marshal: %s", err)
 		return nil, err
 	}
-	req, err := http.NewRequest("POST", "http://localhost:8000/sentiment", bytes.NewBuffer(textRequestJson))
+
+	endpoint := "http://localhost:8000/" + task
+	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(textRequestJson))
 	if err != nil {
 		log.Printf("HuggingFace Sentiment Endpoint: %s", err)
 		return nil, err
