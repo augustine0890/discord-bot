@@ -48,7 +48,7 @@ func main() {
 	// Delete messages weekly
 	c := cron.New()
 	// Running At 09:00, only on Monday (0 9 * * MON)
-	c.AddFunc("0 9 * * MON", func() {
+	c.AddFunc("CRON_TZ=Asia/Seoul 0 9 * * MON", func() {
 		err = database.DeleteMessageWeekly(ctx)
 		if err != nil {
 			log.Printf("Error deleting messages%v\n", err)
@@ -75,7 +75,7 @@ func main() {
 	// Open a websocket connection to Discord and begin listenning
 	err = dg.Open()
 	if err != nil {
-		fmt.Println("Error opening websocket connection: ", err)
+		log.Println("Error opening websocket connection: ", err)
 		return
 	}
 
