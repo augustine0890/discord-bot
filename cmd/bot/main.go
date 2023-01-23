@@ -53,13 +53,14 @@ func main() {
 		if err != nil {
 			log.Printf("Error deleting messages%v\n", err)
 		}
+		log.Println("Deleting messages")
 	})
 	c.Start()
 
 	// Create a new Discord session using the provided bot token
 	dg, err := discordgo.New("Bot " + os.Getenv("TOKEN"))
 	if err != nil {
-		fmt.Println("error creating Discord session: ", err)
+		log.Println("Error creating Discord session: ", err)
 	}
 
 	// // Register the messageCreate func as a callback for MessageCreate events.
@@ -74,7 +75,7 @@ func main() {
 	// Open a websocket connection to Discord and begin listenning
 	err = dg.Open()
 	if err != nil {
-		fmt.Println("error opening websocket connection: ", err)
+		fmt.Println("Error opening websocket connection: ", err)
 		return
 	}
 
