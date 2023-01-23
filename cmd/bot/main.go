@@ -53,7 +53,7 @@ func main() {
 		if err != nil {
 			log.Printf("Error deleting messages%v\n", err)
 		}
-		log.Printf("Deleting messages %v\n", count)
+		log.Printf("Deleting %v messages \n", count)
 	})
 	c.Start()
 
