@@ -46,17 +46,17 @@ func CreateMessage(msg Message, ctx context.Context) (err error) {
 	return nil
 }
 
-func DeleteMessageWeekly(ctx context.Context) error {
+func DeleteMessageWeekly() (count int64, deleteErr error) {
 	// Only save latest one month data
 	oneMonthBefore := time.Now().AddDate(0, -1, 0)
 	time := primitive.NewDateTimeFromTime(oneMonthBefore)
 
 	filter := bson.D{{"createdAt", bson.D{{"$lte", time}}}}
 
-	_, deleteErr := MessagesCollection.DeleteMany(ctx, filter)
+	results, deleteErr := MessagesCollection.DeleteMany(context.TODO(), filter)
 	if deleteErr != nil {
 		log.Println(deleteErr)
-		return deleteErr
+		return count, deleteErr
 	}
-	return nil
+	return results.DeletedCount, nil
 }
