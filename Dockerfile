@@ -14,5 +14,5 @@ COPY --from=build /usr/local/go/ /usr/local/go/
 COPY --from=build /build/bot ./bot
 COPY *.env /app
 
-ENV PATH="/usr/local/go/bin:${PATH}"
+ENV GOPATH="/usr/local/go/bin:${GOPATH}"
 ENTRYPOINT ["./bot"]
