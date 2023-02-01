@@ -18,6 +18,7 @@ var (
 	}
 	ignoreChannel = []string{
 		"1021958640829210674", // test server (attendance)
+		"1069854617011224637", // attendance-beta-version
 		"808621206718251058",  // moderator-only
 		"537522976963166218",  // announcements.
 		"583944383083184129",  // playdapp-sns.
