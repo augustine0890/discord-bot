@@ -47,7 +47,8 @@ func main() {
 
 	// Delete messages weekly
 	c := cron.New()
-	// Running At 09:00, only on Monday (0 9 * * MON)
+	// Running At 10:00, only on Monday (0 10 * * MON)
+	// Every minute (* * * * *)
 	c.AddFunc("CRON_TZ=Asia/Seoul 0 10 * * MON", func() {
 		count, err := database.DeleteMessageWeekly()
 		if err != nil {

@@ -38,6 +38,7 @@
 - Stop and remove containers, networks: `docker-compose down --remove-orphans`
 - Remove stopped containers, dangling images:
   - `docker system prune`
-
+- List containers
+  - `docker container ls -a` --> show all containers
 ## TODO
 - Implement logging file
