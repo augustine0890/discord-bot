@@ -131,7 +131,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	awsClient := sentiment.NewAwsClient()
 	result, err := awsClient.DetectSentiment(content)
 	if err != nil {
-		fmt.Println("Detect sentiment error: ", err)
+		log.Println("Detect sentiment error: ", err)
 		return
 	}
 	// Get KST
@@ -157,6 +157,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		err = database.CreateMessage(msg, ctx)
 		if err != nil {
+			log.Println("fastapi-services: ", err)
 			return
 		}
 
