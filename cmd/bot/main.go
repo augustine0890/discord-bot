@@ -135,7 +135,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	// Get KST
-	kst := time.Now().Add(time.Hour * 9)
+	kst := m.Timestamp.Add(time.Hour * 9)
 
 	contentReq := &sentiment.TextRequest{Text: content}
 
