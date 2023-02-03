@@ -135,15 +135,16 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	// Get KST
-	kst := time.Now().Add(time.Hour * 9)
+	kst := m.Timestamp.Add(time.Hour * 9)
 
 	contentReq := &sentiment.TextRequest{Text: content}
 
 	// Sentiment analysis with huggingface
 	huggingFaceRes, err := sentiment.HuggingFaceSentiment(*contentReq, "sentiment")
 	// log.Println("LABEL", huggingFaceRes.Label)
+
 	// Emotion classification
-	emotion, err := sentiment.HuggingFaceSentiment(*contentReq, "emotion")
+	// emotion, err := sentiment.HuggingFaceSentiment(*contentReq, "emotion")
 
 	if err != nil {
 		msg := database.Message{
@@ -157,7 +158,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		err = database.CreateMessage(msg, ctx)
 		if err != nil {
-			log.Println("fastapi-services: ", err)
+			log.Println("Create MongoDB Messsage: ", err)
 			return
 		}
 
@@ -176,8 +177,8 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Text:                 content,
 		Sentiment:            *result.Sentiment,
 		SentimentHuggingFace: huggingFaceRes.Label,
-		Emotion:              emotion.Label,
-		CreatedAt:            primitive.NewDateTimeFromTime(kst),
+		// Emotion:              emotion.Label,
+		CreatedAt: primitive.NewDateTimeFromTime(kst),
 	}
 
 	err = database.CreateMessage(msg, ctx)
