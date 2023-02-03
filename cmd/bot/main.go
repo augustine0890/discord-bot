@@ -113,7 +113,8 @@ func collectHistoryMessages(s *discordgo.Session, r *discordgo.Ready) {
 
 	awsClient := sentiment.NewAwsClient()
 
-	mess, _ := s.ChannelMessages("", 100, "", "", "")
+	// Channel, num of msg, before, after
+	mess, _ := s.ChannelMessages("983928737408122881", 100, "", "1070248350793859152", "")
 	for _, m := range mess {
 		// Check users
 		if utils.IgnoreUser(m.Author.ID) {
@@ -121,9 +122,13 @@ func collectHistoryMessages(s *discordgo.Session, r *discordgo.Ready) {
 		}
 
 		// Check valid message content
-		content := m.Content
+		content, err := m.ContentWithMoreMentionsReplaced(s)
+		if err != nil {
+			log.Printf("Error getting mentions replaced content %s", err.Error())
+			content = m.Content
+		}
 
-		err := utils.IsValidContent(content)
+		err = utils.IsValidContent(content)
 		if err != nil {
 			log.Println(err.Error())
 			continue
