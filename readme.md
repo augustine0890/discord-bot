@@ -21,7 +21,11 @@
 - Start the Docker service
   - `sudo service docker start`
 - Add the ec2-user to the docker group so you can execute Docker #commands without using sudo.
-  - `sudo usermod -a -G docker ec2-user`
+  -  Create the docker group using groupadd command:
+    - `sudo groupadd docker`
+  - Add your user to this group with the usermod command:
+    - `sudo usermod -aG docker $USER`
+    - Verify that your user has been added to docker group: `groups`
 
 ## Build Docker image
 - Build the image from Dockerfile
