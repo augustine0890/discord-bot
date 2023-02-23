@@ -47,8 +47,8 @@ func CreateMessage(msg Message, ctx context.Context) (err error) {
 }
 
 func DeleteMessageWeekly() (count int64, deleteErr error) {
-	// Only save latest one month data
-	oneMonthBefore := time.Now().AddDate(0, 0, -15)
+	// Only save the last three weeks data (messages)
+	oneMonthBefore := time.Now().AddDate(0, 0, -21)
 	time := primitive.NewDateTimeFromTime(oneMonthBefore)
 
 	filter := bson.D{{"createdAt", bson.D{{"$lte", time}}}}
