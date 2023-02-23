@@ -102,6 +102,13 @@ func registerCommands(s *discordgo.Session, cfg *config.Config) {
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
+	defer func() {
+		if r := recover(); r != nil {
+			err := fmt.Errorf("The error: %v", r)
+			log.Println(err.Error())
+		}
+	}()
+
 	// Check users
 	if utils.IgnoreUser(m.Author.ID) {
 		return
