@@ -114,7 +114,7 @@ func collectHistoryMessages(s *discordgo.Session, r *discordgo.Ready) {
 	awsClient := sentiment.NewAwsClient()
 
 	// Channel, num of msg, before, after
-	mess, _ := s.ChannelMessages("983928737408122881", 100, "", "1070248350793859152", "")
+	mess, _ := s.ChannelMessages("983928737408122881", 100, "", "1078115962131320873", "")
 	for _, m := range mess {
 		// Check users
 		if utils.IgnoreUser(m.Author.ID) {
@@ -165,6 +165,13 @@ func collectHistoryMessages(s *discordgo.Session, r *discordgo.Ready) {
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
+	defer func() {
+		if r := recover(); r != nil {
+			err := fmt.Errorf("Error: %v", r)
+			log.Println(err)
+		}
+	}()
+
 	// Check users
 	if utils.IgnoreUser(m.Author.ID) {
 		return
