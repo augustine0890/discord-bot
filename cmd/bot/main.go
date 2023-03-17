@@ -63,6 +63,17 @@ func main() {
 		log.Println("Error creating Discord session: ", err)
 	}
 
+	sn := "Normal termination"
+	panicMessage := "None"
+	defer func() {
+		if r := recover(); r != nil {
+			panicMessage = fmt.Sprint("Recovered from panic:", r)
+			discord.SendAlertEmbedMessageOnTermination(dg, sn, panicMessage)
+			// Perform cleanup or any other required actions here
+			os.Exit(1) // Exit with a non-zero code to indicate an error occurred
+		}
+	}()
+
 	// // Register the messageCreate func as a callback for MessageCreate events.
 	// dg.AddHandler(messageCreate)
 
@@ -82,14 +93,27 @@ func main() {
 		return
 	}
 
+	// Send the application starting message
+	discord.SendAppStartEmbedMessage(dg)
+
 	// Wait here until CTRL-C or other term signal is received.
 	fmt.Println("Bot is now running. Press CTRL-C to exit.")
-	sc := make(chan os.Signal, 1)
+	// Set up a channel to listen for termination signals.
+	signalChan := make(chan os.Signal, 1)
 
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
-	<-sc
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	// Block and wait for a termination signal.
+	terminationSignal := <-signalChan
 
+	// Send an embedded message with termination signal
+	err = discord.SendAlertEmbedMessageOnTermination(dg, terminationSignal.String(), panicMessage)
+	if err != nil {
+		log.Printf("Error sending embedded message: %v", err)
+	}
+
+	// Close the Discord session.
 	dg.Close()
+	os.Exit(0)
 }
 
 func registerCommands(s *discordgo.Session, cfg *config.Config) {

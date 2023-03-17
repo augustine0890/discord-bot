@@ -14,6 +14,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+const (
+	userID        = "1026733912778625026"
+	notifyChannel = "1054296641651347486"
+)
+
 var ctx = context.TODO()
 
 func ProcessMessageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -128,34 +133,43 @@ func SendMessageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func SendAlertEmbedMessage(s *discordgo.Session, v *mem.VirtualMemoryStat) error {
 	embed := &discordgo.MessageEmbed{
-		Title: "Discord BOT Alert",
-		Color: 0xff0000, // Red color.
+		Title:     "Memory Usage Report Alert",
+		Color:     0xff0000, // Red color.
+		Timestamp: time.Now().Format(time.RFC3339),
 		Fields: []*discordgo.MessageEmbedField{
 			{
-				Name:   "Total memory",
+				Name:   "Total Memory",
 				Value:  fmt.Sprintf("%.2f GB", float64(v.Total)/(1024*1024*1024)),
 				Inline: true,
 			},
 			{
-				Name:   "Used memory",
+				Name:   "Used Memory",
 				Value:  fmt.Sprintf("%.2f GB", float64(v.Used)/(1024*1024*1024)),
 				Inline: true,
 			},
 			{
-				Name:   "Free memory",
+				Name:   "Free Memory",
 				Value:  fmt.Sprintf("%.2f GB", float64(v.Free)/(1024*1024*1024)),
 				Inline: true,
 			},
 			{
-				Name:   "Used memory percentage",
+				Name:   "Used Memory Percentage",
 				Value:  fmt.Sprintf("%.2f%%", v.UsedPercent),
+				Inline: true,
+			},
+			{
+				Name:   "Available Memory",
+				Value:  fmt.Sprintf("%.2f GB", float64(v.Available)/(1024*1024*1024)),
+				Inline: false,
+			},
+			{
+				Name:   "Alert Time",
+				Value:  time.Now().Format("2006-01-02 15:04:05"),
 				Inline: true,
 			},
 		},
 	}
 
-	// userID := "623155071735037982"
-	userID := "1026733912778625026"
 	// Send a DM to the new member with the long text
 	dm, err := s.UserChannelCreate(userID)
 	if err != nil {
@@ -165,5 +179,73 @@ func SendAlertEmbedMessage(s *discordgo.Session, v *mem.VirtualMemoryStat) error
 	if err != nil {
 		return err
 	}
+
+	_, err = s.ChannelMessageSendEmbed(notifyChannel, embed)
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func SendAlertEmbedMessageOnTermination(s *discordgo.Session, signal, panicMessage string) error {
+	description := fmt.Sprintf("Received signal: %v.\nPreparing to terminate the application...", signal)
+
+	embed := &discordgo.MessageEmbed{
+		Title:       "Discord BOT App Termination Alert",
+		Description: description,
+		Color:       0xff0000, // Red color.
+		Timestamp:   time.Now().Format(time.RFC3339),
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:   "Panic Message",
+				Value:  panicMessage,
+				Inline: false,
+			},
+			{
+				Name:   "Termination Time",
+				Value:  time.Now().Format("2006-01-02 15:04:05"),
+				Inline: true,
+			},
+		},
+	}
+
+	// Send a DM to the new member with the long text
+	dm, err := s.UserChannelCreate(userID)
+	if err != nil {
+		return err
+	}
+
+	_, err = s.ChannelMessageSendEmbed(dm.ID, embed)
+	if err != nil {
+		return err
+	}
+	_, err = s.ChannelMessageSendEmbed(notifyChannel, embed)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func SendAppStartEmbedMessage(s *discordgo.Session) {
+
+	embed := &discordgo.MessageEmbed{
+		Title:       "Discord BOT Application Starting",
+		Description: "The application is now starting.",
+		Color:       0x00ff00, // Green
+		Timestamp:   time.Now().Format(time.RFC3339),
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:   "Starting Time",
+				Value:  time.Now().Format("2006-01-02 15:04:05"),
+				Inline: true,
+			},
+		},
+	}
+
+	_, err := s.ChannelMessageSendEmbed(notifyChannel, embed)
+	if err != nil {
+		log.Println("Error sending embed message:", err)
+	}
 }

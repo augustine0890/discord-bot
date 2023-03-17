@@ -50,6 +50,7 @@ func printMemoryUsage(v *mem.VirtualMemoryStat) {
 	fmt.Printf("Total memory: %v bytes (%.2f GB)\n", v.Total, bytesToGB(v.Total))
 	fmt.Printf("Used memory: %v bytes (%.2f GB)\n", v.Used, bytesToGB(v.Used))
 	fmt.Printf("Free memory: %v bytes (%.2f GB)\n", v.Free, bytesToGB(v.Free))
+	fmt.Printf("Available memory: %v bytes (%.2f GB)\n", v.Free, bytesToGB(v.Available))
 	fmt.Printf("Used memory percentage: %.2f%%\n", v.UsedPercent)
 	fmt.Println("------")
 }
