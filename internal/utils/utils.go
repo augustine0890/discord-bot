@@ -34,6 +34,18 @@ var (
 	}
 )
 
+// List of ignored server IDs
+var ignoredServerIDs = []string{"1019782712799805440"}
+
+func IsServerIgnored(serverID string) bool {
+	for _, ignoredServerID := range ignoredServerIDs {
+		if serverID == ignoredServerID {
+			return true
+		}
+	}
+	return false
+}
+
 func IsValidContent(content string) error {
 	// Check the content size less than 5
 	if len(content) < 5 {
