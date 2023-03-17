@@ -28,6 +28,12 @@ func ProcessMessageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 			log.Println(err.Error())
 		}
 	}()
+
+	// Ignore messages from specific servers
+	if utils.IsServerIgnored(m.GuildID) {
+		return
+	}
+
 	// Get the channel information
 	channel, err := s.State.Channel(m.ChannelID)
 	if err != nil {
@@ -128,6 +134,10 @@ func ProcessMessageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func SendMessageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// Ignore messages from specific servers
+	if utils.IsServerIgnored(m.GuildID) {
+		return
+	}
 
 }
 
