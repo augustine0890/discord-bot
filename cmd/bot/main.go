@@ -8,18 +8,17 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/robfig/cron/v3"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"discordbot/internal/commands"
 	"discordbot/internal/config"
+	"discordbot/internal/monitor"
 	"discordbot/internal/utils"
 
 	"discordbot/internal/database"
-	"discordbot/internal/sentiment"
+	"discordbot/internal/discord"
 )
 
 var ctx = context.TODO()
@@ -68,8 +67,11 @@ func main() {
 	// dg.AddHandler(messageCreate)
 
 	// registerCommands(dg, cgf)
+	dg.AddHandler(discord.SendMessageHandler)
+	// Run the monitoring function in a separatre goroutine
+	go monitor.StartMonitoring(dg)
 
-	dg.AddHandler(messageHandler)
+	dg.AddHandler(discord.ProcessMessageHandler)
 	// Only care about receiving message events
 	// dg.Identify.Intents = discordgo.IntentsGuildMessages
 
@@ -99,97 +101,4 @@ func registerCommands(s *discordgo.Session, cfg *config.Config) {
 
 	cmdHandler.RegisterCommand(&commands.CmdPing{})
 	s.AddHandler(cmdHandler.HandleMessage)
-}
-
-func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
-	defer func() {
-		if r := recover(); r != nil {
-			err := fmt.Errorf("The error: %v", r)
-			log.Println(err.Error())
-		}
-	}()
-
-	// Check users
-	if utils.IgnoreUser(m.Author.ID) {
-		return
-	}
-
-	// Get channel
-	channel, _ := s.Channel(m.ChannelID)
-	if utils.IgnoreChannel(channel.ID) {
-		return
-	}
-
-	content, err := m.ContentWithMoreMentionsReplaced(s)
-	if err != nil {
-		log.Printf("Error getting mentions replaced content %s", err.Error())
-		content = m.Content
-	}
-
-	// Check valid message content
-	err = utils.IsValidContent(content)
-	if err != nil {
-		log.Println(err.Error())
-		return
-	}
-
-	// fmt.Println("Sever's id", m.GuildID, 1019782712799805440) //
-
-	awsClient := sentiment.NewAwsClient()
-	result, err := awsClient.DetectSentiment(content)
-	if err != nil {
-		log.Println("Detect sentiment error: ", err)
-		return
-	}
-	// Get KST
-	kst := m.Timestamp.Add(time.Hour * 9)
-
-	contentReq := &sentiment.TextRequest{Text: content}
-
-	// Sentiment analysis with huggingface
-	huggingFaceRes, err := sentiment.HuggingFaceSentiment(*contentReq, "sentiment")
-	// log.Println("LABEL", huggingFaceRes.Label)
-
-	// Emotion classification
-	// emotion, err := sentiment.HuggingFaceSentiment(*contentReq, "emotion")
-
-	if err != nil {
-		msg := database.Message{
-			ID:        primitive.NewObjectID(),
-			Username:  m.Author.Username,
-			Channel:   channel.Name,
-			Text:      content,
-			Sentiment: *result.Sentiment,
-			CreatedAt: primitive.NewDateTimeFromTime(kst),
-		}
-
-		err = database.CreateMessage(msg, ctx)
-		if err != nil {
-			log.Println("Create MongoDB Messsage: ", err)
-			return
-		}
-
-		return
-	}
-
-	// Sentiment Score
-	// var ss map[string]float64
-	// data, _ := json.Marshal(result.SentimentScore)
-	// json.Unmarshal(data, &ss)
-
-	msg := database.Message{
-		ID:                   primitive.NewObjectID(),
-		Username:             m.Author.Username,
-		Channel:              channel.Name,
-		Text:                 content,
-		Sentiment:            *result.Sentiment,
-		SentimentHuggingFace: huggingFaceRes.Label,
-		// Emotion:              emotion.Label,
-		CreatedAt: primitive.NewDateTimeFromTime(kst),
-	}
-
-	err = database.CreateMessage(msg, ctx)
-	if err != nil {
-		return
-	}
 }
