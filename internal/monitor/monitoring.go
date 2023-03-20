@@ -12,7 +12,7 @@ import (
 
 func StartMonitoring(s *discordgo.Session) {
 	monitoringInterval := 2 * time.Minute
-	printInterval := 12 * time.Hour
+	printInterval := 24 * time.Hour
 
 	printTicker := time.NewTicker(printInterval)
 	defer printTicker.Stop()
@@ -29,6 +29,7 @@ func StartMonitoring(s *discordgo.Session) {
 		case <-printTicker.C:
 			// It's time to print the results
 			printMemoryUsage(memInfo)
+			discord.SendInfotEmbedMessage(s, memInfo)
 		}
 	}
 }

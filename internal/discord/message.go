@@ -259,3 +259,50 @@ func SendAppStartEmbedMessage(s *discordgo.Session) {
 		log.Println("Error sending embed message:", err)
 	}
 }
+
+func SendInfotEmbedMessage(s *discordgo.Session, v *mem.VirtualMemoryStat) error {
+	embed := &discordgo.MessageEmbed{
+		Title:     "Daily Memory Usage Report",
+		Color:     0x0000ff, // Blue color.
+		Timestamp: time.Now().Format(time.RFC3339),
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:   "Total Memory",
+				Value:  fmt.Sprintf("%.2f GB", float64(v.Total)/(1024*1024*1024)),
+				Inline: true,
+			},
+			{
+				Name:   "Used Memory",
+				Value:  fmt.Sprintf("%.2f GB", float64(v.Used)/(1024*1024*1024)),
+				Inline: true,
+			},
+			{
+				Name:   "Free Memory",
+				Value:  fmt.Sprintf("%.2f GB", float64(v.Free)/(1024*1024*1024)),
+				Inline: true,
+			},
+			{
+				Name:   "Used Memory Percentage",
+				Value:  fmt.Sprintf("%.2f%%", v.UsedPercent),
+				Inline: true,
+			},
+			{
+				Name:   "Available Memory",
+				Value:  fmt.Sprintf("%.2f GB", float64(v.Available)/(1024*1024*1024)),
+				Inline: false,
+			},
+			{
+				Name:   "Report Time",
+				Value:  time.Now().Format("2006-01-02 15:04:05"),
+				Inline: true,
+			},
+		},
+	}
+
+	_, err := s.ChannelMessageSendEmbed(notifyChannel, embed)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
